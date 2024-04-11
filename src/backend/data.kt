@@ -10,6 +10,14 @@ class IntData(val v:Int) : Data() {
     override fun toString() = "$v"
 }
 
+class DoubleData(val v:Double) : Data() {
+    override fun toString() = "$v"
+}
+
+class FloatData(val v:Float) : Data() {
+    override fun toString() = "$v"
+}
+
 class StringData(val v:String): Data() {
     override fun toString() = "$v"
 }

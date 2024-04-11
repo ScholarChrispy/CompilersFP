@@ -31,7 +31,7 @@ assignment returns [Expr expr]
 
 expression returns [Expr expr]
     : '(' expression ')'                      { $expr = $expression.expr; }
-    | NUMERIC                                 { $expr = new IntLiteral($NUMERIC.text); }
+    | numeric                                 { $expr = $numeric.expr; }
     | STRING                                  { $expr = new StringLiteral($STRING.text); }
     | ID                                      { $expr = new Deref($ID.text); }
     | 'print(' expression ')'                 { $expr = new Print($expression.expr); }
@@ -44,6 +44,7 @@ expression returns [Expr expr]
 ifcheck returns [Expr expr]
     : 'if' '(' expression ')' '{' block '}'                            { $expr = new Ifelse($expression.expr, $block.expr, new NoneExpr());}
     | 'if' '(' expression ')' '{' b1=block '}' 'else' '{' b2=block '}' { $expr = new Ifelse($expression.expr, $b1.expr, $b2.expr); }
+    | 'if' '(' expression ')' '{' b1=block '}' 'else' ifcheck          { $expr = new Ifelse($expression.expr, $b1.expr, $ifcheck.expr); }
     ;
     
 loop returns [Expr expr]
@@ -62,12 +63,23 @@ funcCall returns [Expr expr]
     : {List<Expr> args = new ArrayList<Expr>(); } 
     ID '(' (e1=expression { args.add($e1.expr); }(','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new FuncCall($ID.text, args); }
     ;
+    
+numeric returns [Expr expr]
+    : INT   {$expr = new IntLiteral($INT.text); }
+    | FLOAT {$expr = new FloatLiteral($FLOAT.text); }
+    | DOUBLE {$expr = new DoubleLiteral($DOUBLE.text); }
+    ;
 
 
 CREMENT    : ( '+++' | '---' );
-OPERATOR   : ('+' | '-' | '*' | '/' | '++' );
+OPERATOR   : ('+' | MINUS | '*' | '/' | '++' );
+MINUS      : ('-');
 COMPARES   : ('<' | '<=' | '>' | '>=' | '==' | '!=');
-NUMERIC    : [0-9]+ | ([0-9]*'.'[0-9]+);
+
+INT        : [0-9]+ ;
+FLOAT      : ('0' .. '9')+ '.' ('0' .. '9')* 'f';
+DOUBLE     : ('0' .. '9')+ '.' ('0' .. '9')* ;
+
 STRING     : '"' .*? (~('\\')'"');
 ID         : [a-zA-Z_][a-zA-Z0-9_]*;
 COMMENT    : '/*' .*? '*/';    

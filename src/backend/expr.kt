@@ -13,6 +13,16 @@ class IntLiteral(val lexeme:String):Expr() {
     = IntData(Integer.parseInt(lexeme))
 }
 
+class DoubleLiteral(val lexeme:String):Expr() {
+    override fun eval(runtime:Runtime):Data 
+    = DoubleData(lexeme.toDouble())
+}
+
+class FloatLiteral(val lexeme:String):Expr() {
+    override fun eval(runtime:Runtime):Data 
+    = FloatData(lexeme.toFloat())
+}
+
 class BooleanLiteral(val lexeme:String):Expr() {
     override fun eval(runtime:Runtime): Data = 
     BooleanData(lexeme.equals("true"))
@@ -174,3 +184,19 @@ class FuncCall(val funcname: String, val arguments: List<Expr>) : Expr() {
         ))
     }
 }
+
+/*class Negative(val expression: Expr) : Expr() {
+     override fun eval(runtime:Runtime): Data {
+        try {
+            val neg = -1*expression.eval(runtime)
+            return neg
+        } catch (e: NumberFormatException) {
+            println("Error: ${e.message}")
+        }
+        return None
+    }
+}*/
+
+//class sum(val arguments: List<Expr>) : Expr() {
+        
+//}
