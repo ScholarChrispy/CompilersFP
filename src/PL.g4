@@ -38,6 +38,9 @@ expression returns [Expr expr]
     | e1=expression COMPARES e2=expression    { $expr = new Cmp($COMPARES.text, $e1.expr, $e2.expr); }
     | e1=expression op=OPERATOR e2=expression { $expr = new Arith($op.text, $e1.expr, $e2.expr); }
     | funcCall                                { $expr = $funcCall.expr; }
+    | sum                                     { $expr = $sum.expr; }
+    | max                                     { $expr = $max.expr; }
+    | min                                     { $expr = $min.expr; }
     ;
 
 
@@ -50,7 +53,7 @@ ifcheck returns [Expr expr]
 loop returns [Expr expr]
     : 'while' '(' cond=expression ')' '{' block '}' { $expr = new Loop(new NoneExpr(), $cond.expr, $block.expr, new NoneExpr()); }
     | 'for' '(' a1=assignment ';' e1=expression ';' a2=assignment ')' '{' block '}' { $expr = new Loop($a1.expr, $e1.expr, $block.expr, $a2.expr); }
-    | 'for' '(' ID 'in' e1=expression '..' e2=expression ')' '{' block '}' { $expr = new Loop(new Assign($ID.text, $e1.expr), new Cmp("<=", new Deref($ID.text), $e2.expr), $block.expr, new Assign($ID.text, new Crement(new Deref($ID.text), "+++"))); }
+    | 'for' '(' ID 'in' e1=expression '.''.' e2=expression ')' '{' block '}' { $expr = new Loop(new Assign($ID.text, $e1.expr), new Cmp("<=", new Deref($ID.text), $e2.expr), $block.expr, new Assign($ID.text, new Crement(new Deref($ID.text), "+++"))); }
     ;
     
 funcDef returns [Expr expr]
@@ -69,7 +72,21 @@ numeric returns [Expr expr]
     | FLOAT {$expr = new FloatLiteral($FLOAT.text); }
     | DOUBLE {$expr = new DoubleLiteral($DOUBLE.text); }
     ;
+    
+sum returns [Expr expr]
+    : {List<Expr> args = new ArrayList<Expr>(); }
+    'sum' '(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Sum(args); }
+    ;
 
+max returns [Expr expr]
+    : {List<Expr> args = new ArrayList<Expr>(); }
+    'max' '(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Max(args); }
+    ;
+    
+min returns [Expr expr]
+    : {List<Expr> args = new ArrayList<Expr>(); }
+    'min' '(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Min(args); }
+    ;
 
 CREMENT    : ( '+++' | '---' );
 OPERATOR   : ('+' | MINUS | '*' | '/' | '++' );
@@ -77,8 +94,8 @@ MINUS      : ('-');
 COMPARES   : ('<' | '<=' | '>' | '>=' | '==' | '!=');
 
 INT        : [0-9]+ ;
-FLOAT      : ('0' .. '9')+ '.' ('0' .. '9')* 'f';
-DOUBLE     : ('0' .. '9')+ '.' ('0' .. '9')* ;
+FLOAT      : ('0' .. '9')+ '.' ('0' .. '9')+ 'f';
+DOUBLE     : ('0' .. '9')+ '.' ('0' .. '9')+ ;
 
 STRING     : '"' .*? (~('\\')'"');
 ID         : [a-zA-Z_][a-zA-Z0-9_]*;
