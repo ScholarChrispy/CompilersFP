@@ -12,11 +12,11 @@ class Runtime() {
     }
 
     override fun toString():String =
-        symbolTable.map { 
-            entry -> "${entry.key} = ${entry.value}"
+        symbolTable.map {
+                entry -> "${entry.key} = ${entry.value}"
         }.joinToString("; ")
-        
-        
+
+
     fun copy(additionalBindings:Map<String, Data>):Runtime {
         val newRuntime = Runtime()
         newRuntime.symbolTable.putAll(this.symbolTable)

@@ -9,27 +9,27 @@ class NoneExpr(): Expr() {
 }
 
 class IntLiteral(val lexeme:String):Expr() {
-    override fun eval(runtime:Runtime):Data 
-    = IntData(Integer.parseInt(lexeme))
+    override fun eval(runtime:Runtime):Data
+            = IntData(Integer.parseInt(lexeme))
 }
 
 class DoubleLiteral(val lexeme:String):Expr() {
-    override fun eval(runtime:Runtime):Data 
-    = DoubleData(lexeme.toDouble())
+    override fun eval(runtime:Runtime):Data
+            = DoubleData(lexeme.toDouble())
 }
 
 class FloatLiteral(val lexeme:String):Expr() {
-    override fun eval(runtime:Runtime):Data 
-    = FloatData(lexeme.toFloat())
+    override fun eval(runtime:Runtime):Data
+            = FloatData(lexeme.toFloat())
 }
 
 class BooleanLiteral(val lexeme:String):Expr() {
-    override fun eval(runtime:Runtime): Data = 
-    BooleanData(lexeme.equals("true"))
+    override fun eval(runtime:Runtime): Data =
+        BooleanData(lexeme.equals("true"))
 }
 
 class StringLiteral(val lexeme:String):Expr() {
-    override fun eval(runtime:Runtime): Data { 
+    override fun eval(runtime:Runtime): Data {
         return StringData(lexeme.substring(1, lexeme.length-1))
     }
 }
@@ -67,7 +67,7 @@ class Arith(val op:String, val left:Expr, val right:Expr) : Expr() {
         }
         return None
     }
-    
+
 }
 
 class Assign(val name: String,val expr: Expr): Expr() {
@@ -108,7 +108,7 @@ class Cmp(val op:String,val left:Expr,val right:Expr) : Expr() {
                 "==" -> x.v == y.v
                 "!=" -> x.v != y.v
                 else -> { throw Exception("Invalid operator")}
-                
+
             }
             return BooleanData(result)
         }
@@ -121,7 +121,7 @@ class Cmp(val op:String,val left:Expr,val right:Expr) : Expr() {
                 "==" -> x.v == y.v
                 "!=" -> x.v != y.v
                 else -> { throw Exception("Invalid operator")}
-                
+
             }
             return BooleanData(result)
         }
@@ -134,7 +134,7 @@ class Cmp(val op:String,val left:Expr,val right:Expr) : Expr() {
                 "==" -> x.v == y.v
                 "!=" -> x.v != y.v
                 else -> { throw Exception("Invalid operator")}
-                
+
             }
             return BooleanData(result)
         }
@@ -211,7 +211,7 @@ class FuncCall(val funcname: String, val arguments: List<Expr>) : Expr() {
         if(arguments.size != f.parameters.size) {
             throw Exception("$funcname expects ${f.parameters.size} arguments, but ${arguments.size} given.")
         }
-        
+
         // evaluate each argument to a data
         val argumentData = arguments.map {
             it.eval(runtime)
@@ -257,7 +257,7 @@ class Sum(val arguments: List<Expr>) : Expr() {
                 if (floatcheck == true && (temp is DoubleData)) {
                     temp = FloatData(temp.v.toFloat())
                 }
-                
+
                 if (temp is IntData) {
                     resultInt = resultInt + temp.v
                 }
@@ -303,97 +303,97 @@ class Sum(val arguments: List<Expr>) : Expr() {
 }
 
 class Max(val arguments: List<Expr>) : Expr() {
-     override fun eval(runtime:Runtime): Data {
-         val x:Data = arguments[0].eval(runtime)
+    override fun eval(runtime:Runtime): Data {
+        val x:Data = arguments[0].eval(runtime)
         if(x is IntData || x is DoubleData || x is FloatData) {
             var highest = -Float.MAX_VALUE
             var highestIndex = 0
-             for (i in 0 until (arguments.size)) {
-                 var temp:Data = arguments[i].eval(runtime)
-                 if (temp is IntData) {
-                     temp = FloatData(temp.v.toFloat()) 
-                 }
-                 if (temp is DoubleData) {
-                     temp = FloatData(temp.v.toFloat()) 
-                 }
-                 if (temp is FloatData) {
-                     if (i == 0) {
-                         highest = temp.v
-                     }
-                     else {
-                         if (highest < temp.v){
-                             highest = temp.v
-                             highestIndex = i
-                         }
-                     }
-                 }
-                 else {
-                     throw Exception("Cannot compare $temp.")
-                 }
-             }
-             val dataCheck:Data = arguments[highestIndex].eval(runtime)
-             if (dataCheck is IntData){
-                 return IntData(dataCheck.v)
-             }
-             if (dataCheck is DoubleData){
-                 return DoubleData(dataCheck.v)
-             }
-             if (dataCheck is FloatData){
-                 return FloatData(dataCheck.v)
-             }
-            
+            for (i in 0 until (arguments.size)) {
+                var temp:Data = arguments[i].eval(runtime)
+                if (temp is IntData) {
+                    temp = FloatData(temp.v.toFloat())
+                }
+                if (temp is DoubleData) {
+                    temp = FloatData(temp.v.toFloat())
+                }
+                if (temp is FloatData) {
+                    if (i == 0) {
+                        highest = temp.v
+                    }
+                    else {
+                        if (highest < temp.v){
+                            highest = temp.v
+                            highestIndex = i
+                        }
+                    }
+                }
+                else {
+                    throw Exception("Cannot compare $temp.")
+                }
+            }
+            val dataCheck:Data = arguments[highestIndex].eval(runtime)
+            if (dataCheck is IntData){
+                return IntData(dataCheck.v)
+            }
+            if (dataCheck is DoubleData){
+                return DoubleData(dataCheck.v)
+            }
+            if (dataCheck is FloatData){
+                return FloatData(dataCheck.v)
+            }
+
         }
         else {
             throw Exception("$x is not a valid number.")
         }
         return None
-     }
+    }
 }
 
 class Min(val arguments: List<Expr>) : Expr() {
-     override fun eval(runtime:Runtime): Data {
-         val x:Data = arguments[0].eval(runtime)
+    override fun eval(runtime:Runtime): Data {
+        val x:Data = arguments[0].eval(runtime)
         if(x is IntData || x is DoubleData || x is FloatData) {
             var lowest = Float.MAX_VALUE
             var lowestIndex = 0
-             for (i in 0 until (arguments.size)) {
-                 var temp:Data = arguments[i].eval(runtime)
-                 if (temp is IntData) {
-                     temp = FloatData(temp.v.toFloat()) 
-                 }
-                 if (temp is DoubleData) {
-                     temp = FloatData(temp.v.toFloat()) 
-                 }
-                 if (temp is FloatData) {
-                     if (i == 0) {
-                         lowest = temp.v
-                     }
-                     else {
-                         if (lowest > temp.v){
-                             lowest = temp.v
-                             lowestIndex = i
-                         }
-                     }
-                 }
-                 else {
-                     throw Exception("Cannot compare $temp.")
-                 }
-             }
-             val dataCheck:Data = arguments[lowestIndex].eval(runtime)
-             if (dataCheck is IntData){
-                 return IntData(dataCheck.v)
-             }
-             if (dataCheck is DoubleData){
-                 return DoubleData(dataCheck.v)
-             }
-             if (dataCheck is FloatData){
-                 return FloatData(dataCheck.v)
-             }
-            
+            for (i in 0 until (arguments.size)) {
+                var temp:Data = arguments[i].eval(runtime)
+                if (temp is IntData) {
+                    temp = FloatData(temp.v.toFloat())
+                }
+                if (temp is DoubleData) {
+                    temp = FloatData(temp.v.toFloat())
+                }
+                if (temp is FloatData) {
+                    if (i == 0) {
+                        lowest = temp.v
+                    }
+                    else {
+                        if (lowest > temp.v){
+                            lowest = temp.v
+                            lowestIndex = i
+                        }
+                    }
+                }
+                else {
+                    throw Exception("Cannot compare $temp.")
+                }
+            }
+            val dataCheck:Data = arguments[lowestIndex].eval(runtime)
+            if (dataCheck is IntData){
+                return IntData(dataCheck.v)
+            }
+            if (dataCheck is DoubleData){
+                return DoubleData(dataCheck.v)
+            }
+            if (dataCheck is FloatData){
+                return FloatData(dataCheck.v)
+            }
+
         }
         else {
             throw Exception("$x is not a valid number.")
         }
         return None
-     }
+    }
 }
