@@ -34,6 +34,7 @@ expression returns [Expr expr]
     | numeric                                 { $expr = $numeric.expr; }
     | STRING                                  { $expr = new StringLiteral($STRING.text); }
     | ID                                      { $expr = new Deref($ID.text); }
+    | '-' '('? ID ')'?                        { $expr = new Arith("-", new IntLiteral("0"), new Deref($ID.text)); }
     | 'print(' expression ')'                 { $expr = new Print($expression.expr); }
     | e1=expression COMPARES e2=expression    { $expr = new Cmp($COMPARES.text, $e1.expr, $e2.expr); }
     | e1=expression op=OPERATOR e2=expression { $expr = new Arith($op.text, $e1.expr, $e2.expr); }
@@ -41,6 +42,9 @@ expression returns [Expr expr]
     | sum                                     { $expr = $sum.expr; }
     | max                                     { $expr = $max.expr; }
     | min                                     { $expr = $min.expr; }
+    | n1=numeric'-'n2=numeric                 { $expr = new Arith("-", $n1.expr, $n2.expr); }
+    | e1=expression'-'n2=numeric                 { $expr = new Arith("-", $e1.expr, $n2.expr); }
+    | n1=numeric'-'e2=expression                 { $expr = new Arith("-", $n1.expr, $e2.expr); }
     ;
 
 
@@ -71,6 +75,10 @@ numeric returns [Expr expr]
     : INT   {$expr = new IntLiteral($INT.text); }
     | FLOAT {$expr = new FloatLiteral($FLOAT.text); }
     | DOUBLE {$expr = new DoubleLiteral($DOUBLE.text); }
+    | '-' '('? INT ')'?  { $expr = new Arith("-", new IntLiteral("0"), new IntLiteral($INT.text)); }
+    | '-' '('? FLOAT ')'?   { $expr = new Arith("-", new FloatLiteral("0.0"), new FloatLiteral($FLOAT.text)); }
+    | '-' '('? DOUBLE ')'?   { $expr = new Arith("-", new DoubleLiteral("0.0"), new DoubleLiteral($DOUBLE.text)); }
+    
     ;
     
 sum returns [Expr expr]
