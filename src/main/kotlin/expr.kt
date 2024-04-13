@@ -36,25 +36,47 @@ class StringLiteral(val lexeme:String):Expr() {
 
 class Arith(val op:String, val left:Expr, val right:Expr) : Expr() {
     override fun eval(runtime:Runtime):Data {
-        val x = left.eval(runtime)
-        val y = right.eval(runtime)
-        if (x is IntData && y is IntData) {
-            if (op == "+") return IntData(x.v + y.v)
-            if (op == "-") return IntData(x.v - y.v)
-            if (op == "*") return IntData(x.v * y.v)
-            if (op == "/") return IntData(x.v / y.v)
-        }
-        if (x is FloatData && y is FloatData) {
-            if (op == "+") return FloatData(x.v + y.v)
-            if (op == "-") return FloatData(x.v - y.v)
-            if (op == "*") return FloatData(x.v * y.v)
-            if (op == "/") return FloatData(x.v / y.v)
-        }
-        if (x is DoubleData && y is DoubleData) {
-            if (op == "+") return DoubleData(x.v + y.v)
-            if (op == "-") return DoubleData(x.v - y.v)
-            if (op == "*") return DoubleData(x.v * y.v)
-            if (op == "/") return DoubleData(x.v / y.v)
+        var x = left.eval(runtime)
+        var y = right.eval(runtime)
+        if (!(x is StringData) && !(y is StringData)) {
+            if (x is FloatData && y is IntData) {
+                y = FloatData(y.v.toFloat())
+            }
+            if (x is FloatData && y is DoubleData) {
+                y = FloatData(y.v.toFloat())
+            }
+            if (x is DoubleData && y is IntData) {
+                y = DoubleData(y.v.toDouble())
+            }
+            if (y is FloatData && x is IntData) {
+                x = FloatData(x.v.toFloat())
+            }
+            if (y is FloatData && x is DoubleData) {
+                x = FloatData(x.v.toFloat())
+            }
+            if (y is DoubleData && x is IntData) {
+                x = DoubleData(x.v.toDouble())
+            }
+        
+            if (x is IntData && y is IntData) {
+                if (op == "+") return IntData(x.v + y.v)
+                if (op == "-") return IntData(x.v - y.v)
+                if (op == "*") return IntData(x.v * y.v)
+                if (op == "/") return IntData(x.v / y.v)
+            }
+            if (x is DoubleData && y is DoubleData) {
+                if (op == "+") return DoubleData(x.v + y.v)
+                if (op == "-") return DoubleData(x.v - y.v)
+                if (op == "*") return DoubleData(x.v * y.v)
+                if (op == "/") return DoubleData(x.v / y.v)
+            }
+            if (x is FloatData && y is FloatData) {
+                if (op == "+") return FloatData(x.v + y.v)
+                if (op == "-") return FloatData(x.v - y.v)
+                if (op == "*") return FloatData(x.v * y.v)
+                if (op == "/") return FloatData(x.v / y.v)
+            }
+            
         }
         if (x is StringData && y is IntData) {
             if (op == "*") return StringData(x.v.repeat(y.v))
