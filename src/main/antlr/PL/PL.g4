@@ -34,7 +34,7 @@ expression returns [Expr expr]
     | numeric                                 { $expr = $numeric.expr; }
     | STRING                                  { $expr = new StringLiteral($STRING.text); }
     | ID                                      { $expr = new Deref($ID.text); }
-    | '-' '('? ID ')'?                        { $expr = new Arith("-", new IntLiteral("0"), new Deref($ID.text)); }
+    | '-' '('? expression ')'?                { $expr = new Arith("-", new IntLiteral("0"), $expression.expr); }
     | 'print(' expression ')'                 { $expr = new Print($expression.expr); }
     | e1=expression COMPARES e2=expression    { $expr = new Cmp($COMPARES.text, $e1.expr, $e2.expr); }
     | e1=expression op=OPERATOR e2=expression { $expr = new Arith($op.text, $e1.expr, $e2.expr); }
