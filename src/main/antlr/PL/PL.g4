@@ -43,8 +43,8 @@ expression returns [Expr expr]
     | max                                     { $expr = $max.expr; }
     | min                                     { $expr = $min.expr; }
     | n1=numeric'-'n2=numeric                 { $expr = new Arith("-", $n1.expr, $n2.expr); }
-    | e1=expression'-'n2=numeric                 { $expr = new Arith("-", $e1.expr, $n2.expr); }
-    | n1=numeric'-'e2=expression                 { $expr = new Arith("-", $n1.expr, $e2.expr); }
+    | e1=expression'-'n2=numeric              { $expr = new Arith("-", $e1.expr, $n2.expr); }
+    | n1=numeric'-'e2=expression              { $expr = new Arith("-", $n1.expr, $e2.expr); }
     ;
 
 
@@ -57,7 +57,7 @@ ifcheck returns [Expr expr]
 loop returns [Expr expr]
     : 'while' '(' cond=expression ')' '{' block '}' { $expr = new Loop(new NoneExpr(), $cond.expr, $block.expr, new NoneExpr()); }
     | 'for' '(' a1=assignment ';' e1=expression ';' a2=assignment ')' '{' block '}' { $expr = new Loop($a1.expr, $e1.expr, $block.expr, $a2.expr); }
-    | 'for' '(' ID 'in' e1=expression '.''.' e2=expression ')' '{' block '}' { $expr = new Loop(new Assign($ID.text, $e1.expr), new Cmp("<=", new Deref($ID.text), $e2.expr), $block.expr, new Assign($ID.text, new Crement(new Deref($ID.text), "+++"))); }
+    | 'for' '(' ID 'in' e1=expression '..' e2=expression ')' '{' block '}' { $expr = new Loop(new Assign($ID.text, $e1.expr), new Cmp("<=", new Deref($ID.text), $e2.expr), $block.expr, new Assign($ID.text, new Crement(new Deref($ID.text), "+++"))); }
     ;
     
 funcDef returns [Expr expr]
@@ -83,17 +83,17 @@ numeric returns [Expr expr]
     
 sum returns [Expr expr]
     : {List<Expr> args = new ArrayList<Expr>(); }
-    'sum' '(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Sum(args); }
+    'sum(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Sum(args); }
     ;
 
 max returns [Expr expr]
     : {List<Expr> args = new ArrayList<Expr>(); }
-    'max' '(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Max(args); }
+    'max(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Max(args); }
     ;
     
 min returns [Expr expr]
     : {List<Expr> args = new ArrayList<Expr>(); }
-    'min' '(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Min(args); }
+    'min(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Min(args); }
     ;
 
 CREMENT    : ( '+++' | '---' );
