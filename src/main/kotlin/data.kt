@@ -28,7 +28,14 @@ class BooleanData(val v:Boolean): Data() {
 
 class FuncData(val name: String, val parameters: List<String>, val body: Expr) : Data() {
     override fun toString()
-            = parameters.joinToString(", ").let {
+    = parameters.joinToString(", ").let {
+        "$name($it)"
+    }
+}
+
+class ArrayData(val type: Data, val name: String, val contents: List<Expr>) : Data() {
+    override fun toString()
+    = contents.joinToString(", ").let {
         "$name($it)"
     }
 }

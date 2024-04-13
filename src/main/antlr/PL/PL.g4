@@ -45,6 +45,7 @@ expression returns [Expr expr]
     | n1=numeric'-'n2=numeric                 { $expr = new Arith("-", $n1.expr, $n2.expr); }
     | e1=expression'-'n2=numeric              { $expr = new Arith("-", $e1.expr, $n2.expr); }
     | n1=numeric'-'e2=expression              { $expr = new Arith("-", $n1.expr, $e2.expr); }
+    | array                                   { $expr = $array.expr; }
     ;
 
 
@@ -94,6 +95,16 @@ max returns [Expr expr]
 min returns [Expr expr]
     : {List<Expr> args = new ArrayList<Expr>(); }
     'min(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Min(args); }
+    ;
+    
+array returns [Expr expr]
+    : {List<Expr> args = new ArrayList<Expr>(); }
+    ('int[]' ID '=' '[' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ']'{ $expr = new ArrayDef(new IntData(0), $ID.text, args); }
+    |'double[]' ID '=' '[' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ']'{ $expr = new ArrayDef(new DoubleData(0.0), $ID.text, args); }
+    |'float[]' ID '=' '[' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ']'{ $expr = new ArrayDef(new FloatData(0.0f), $ID.text, args); }
+    |'String[]' ID '=' '[' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ']'{ $expr = new ArrayDef(new StringData("a"), $ID.text, args); }
+    |'bool[]' ID '=' '[' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ']'{ $expr = new ArrayDef(new BooleanData(true), $ID.text, args); }
+    )
     ;
 
 CREMENT    : ( '+++' | '---' );

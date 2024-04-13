@@ -428,3 +428,39 @@ class Min(val arguments: List<Expr>) : Expr() {
         return None
      }
 }
+
+class ArrayDef(val type: Data, val name: String, val contents: List<Expr>) : Expr() {
+    override fun eval(runtime:Runtime):Data {
+        contents.forEach{content -> 
+            val x = content.eval(runtime)
+            if (type is IntData) {
+                if (!(x is IntData)) {
+                    throw Exception("$x is not an Int")
+                }
+            }
+            if (type is DoubleData) {
+                if (!(x is DoubleData)) {
+                    throw Exception("$x is not a Double")
+                }
+            }
+            if (type is FloatData) {
+                if (!(x is FloatData)) {
+                    throw Exception("$x is not a Float")
+                }
+            }
+            if (type is StringData) {
+                if (!(x is StringData)) {
+                    throw Exception("$x is not a String")
+                }
+            }
+            if (type is BooleanData) {
+                if (!(x is BooleanData)) {
+                    throw Exception("$x is not a Boolean")
+                }
+            }
+        }
+        val arraydata = ArrayData(type, name, contents)
+        runtime.symbolTable[name] = arraydata
+        return None
+    }
+}
