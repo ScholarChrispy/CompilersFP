@@ -119,8 +119,28 @@ class Block(val exprs:List<Expr>):Expr() {
 
 class Cmp(val op:String,val left:Expr,val right:Expr) : Expr() {
     override fun eval(runtime:Runtime): Data {
-        val x:Data = left.eval(runtime)
-        val y:Data = right.eval(runtime)
+        var x:Data = left.eval(runtime)
+        var y:Data = right.eval(runtime)
+        
+        if (x is FloatData && y is IntData) {
+            y = FloatData(y.v.toFloat())
+        }
+        if (x is FloatData && y is DoubleData) {
+            y = FloatData(y.v.toFloat())
+        }
+        if (x is DoubleData && y is IntData) {
+            y = DoubleData(y.v.toDouble())
+        }
+        if (y is FloatData && x is IntData) {
+            x = FloatData(x.v.toFloat())
+        }
+        if (y is FloatData && x is DoubleData) {
+            x = FloatData(x.v.toFloat())
+        }
+        if (y is DoubleData && x is IntData) {
+            x = DoubleData(x.v.toDouble())
+        }
+        
         if(x is IntData && y is IntData) {
             val result = when(op) {
                 "<" -> x.v < y.v
@@ -134,7 +154,7 @@ class Cmp(val op:String,val left:Expr,val right:Expr) : Expr() {
             }
             return BooleanData(result)
         }
-        else if (x is FloatData && y is FloatData) {
+        else if (x is DoubleData && y is DoubleData) {
             val result = when(op) {
                 "<" -> x.v < y.v
                 "<=" -> x.v <= y.v
@@ -147,7 +167,7 @@ class Cmp(val op:String,val left:Expr,val right:Expr) : Expr() {
             }
             return BooleanData(result)
         }
-        else if (x is DoubleData && y is DoubleData) {
+        else if (x is FloatData && y is FloatData) {
             val result = when(op) {
                 "<" -> x.v < y.v
                 "<=" -> x.v <= y.v
