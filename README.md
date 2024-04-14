@@ -1,6 +1,6 @@
 # CompilersFP
 
-## Members:
+## Group Members:
 - Christopher Johnson (100870882)
 - Jack Udeschini (100777605)
 - Cameron ()
