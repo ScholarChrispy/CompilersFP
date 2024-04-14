@@ -674,16 +674,52 @@ class DerefMin(val arrayID:String):Expr() {
 class Len(val arguments: List<Expr>) : Expr() {
     override fun eval(runtime: Runtime): Data {
         val x:Data = arguments[0].eval(runtime)
-        if (x is IntData || x is DoubleData || x is FloatData) {
-            var count = 0
-            for (i in 0 until (arguments.size)) {
-                count++
+        var count = 0
+        for (i in 0 until (arguments.size)) {
+            val temp = arguments[i].eval(runtime)
+            if (x is IntData) {
+                if (temp is IntData){
+                    count++
+                }
+                else {
+                    throw Exception("$temp is not an Int")
+                }
             }
-            return IntData(count)
+            if (x is DoubleData) {
+                if (temp is DoubleData){
+                    count++
+                }
+                else {
+                    throw Exception("$temp is not a Double")
+                }
+            }
+            if (x is FloatData) {
+                if (temp is FloatData){
+                    count++
+                }
+                else {
+                    throw Exception("$temp is not a Float")
+                }
+            }
+            if (x is StringData) {
+                if (temp is StringData){
+                    count++
+                }
+                else {
+                    throw Exception("$temp is not a String")
+                }
+            }
+            if (x is BooleanData) {
+                if (temp is BooleanData){
+                    count++
+                }
+                else {
+                    throw Exception("$temp is not a Boolean")
+                }
+            }
         }
-        else {
-            throw Exception("$x is not a supported data type.")
-        }
+        
+        return IntData(count)
     }
 }
 
