@@ -455,6 +455,7 @@ class Min(val arguments: List<Expr>) : Expr() {
 
 class ArrayDef(val type: Data, val name: String, val contents: List<Expr>) : Expr() {
     override fun eval(runtime:Runtime):Data {
+        var contentData:MutableList<Data> = mutableListOf()
         contents.forEach{content -> 
             val x = content.eval(runtime)
             if (type is IntData) {
@@ -482,9 +483,39 @@ class ArrayDef(val type: Data, val name: String, val contents: List<Expr>) : Exp
                     throw Exception("$x is not a Boolean")
                 }
             }
+            contentData.add(x)
         }
-        val arraydata = ArrayData(type, name, contents)
+        val arraydata = ArrayData(type, name, contentData)
         runtime.symbolTable[name] = arraydata
         return None
+    }
+}
+
+class ArrayIndex(val name: String, val index: Expr) : Expr() {
+    override fun eval(runtime:Runtime):Data {
+        val x = index.eval(runtime)
+        var ind:Int
+        if (x is IntData) {
+            ind = x.v
+        }
+        else{
+            throw Exception("Index is not an Int")
+        }
+        val array = runtime.symbolTable[name]
+        if(array == null) {
+            throw Exception("$name does not exist.")
+        }
+        if(array is ArrayData) {
+            if(array.contents.size <= ind || ind < 0) {
+                throw Exception("Index out of bounds")
+            }
+            return array.contents[ind]
+            
+            
+        }
+        else {
+            throw Exception("$name is not an array.")
+        }
+     
     }
 }

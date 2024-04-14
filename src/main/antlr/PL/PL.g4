@@ -47,6 +47,7 @@ expression returns [Expr expr]
     | e1=expression'-'n2=numeric              { $expr = new Arith("-", $e1.expr, $n2.expr); }
     | n1=numeric'-'e2=expression              { $expr = new Arith("-", $n1.expr, $e2.expr); }
     | array                                   { $expr = $array.expr; }
+    | arrayIndex                              { $expr = $arrayIndex.expr; }
     ;
 
 
@@ -106,6 +107,10 @@ array returns [Expr expr]
     |'String[]' ID '=' '[' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ']'{ $expr = new ArrayDef(new StringData("a"), $ID.text, args); }
     |'bool[]' ID '=' '[' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ']'{ $expr = new ArrayDef(new BooleanData(true), $ID.text, args); }
     )
+    ;
+    
+arrayIndex returns [Expr expr]
+    : ID'[' expression ']' { $expr = new ArrayIndex($ID.text, $expression.expr); }
     ;
 
 returnStmt returns [Expr expr]

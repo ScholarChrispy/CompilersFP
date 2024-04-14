@@ -33,10 +33,10 @@ class FuncData(val name: String, val parameters: List<String>, val body: Expr) :
     }
 }
 
-class ArrayData(val type: Data, val name: String, val contents: List<Expr>) : Data() {
-    override fun toString()
-    = contents.joinToString(", ").let {
-        "$name($it)"
+class ArrayData(val type: Data, val name: String, val contents: List<Data>) : Data() {
+    override fun toString() 
+        = contents.joinToString(", ").let {
+        "[$it]"
     }
 }
 
