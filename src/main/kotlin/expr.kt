@@ -34,6 +34,13 @@ class StringLiteral(val lexeme:String):Expr() {
     }
 }
 
+class ReturnLiteral(val expr:Expr):Expr() {
+    override fun eval(runtime: Runtime):Data {
+        val exprVal = expr.eval(runtime)
+        return ReturnData(exprVal)
+    }
+}
+
 class Arith(val op:String, val left:Expr, val right:Expr) : Expr() {
     override fun eval(runtime:Runtime):Data {
         var x = left.eval(runtime)
