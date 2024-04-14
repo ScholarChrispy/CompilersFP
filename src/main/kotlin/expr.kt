@@ -112,8 +112,25 @@ class Deref(val name:String): Expr() {
 }
 
 class Block(val exprs:List<Expr>):Expr() {
-    override fun eval(runtime:Runtime):Data{
-        return exprs.map { it.eval(runtime) }.last()
+    override fun eval(runtime:Runtime):Data {
+        // stores the evaluated expression values
+        val evalList:MutableList<Data> = mutableListOf()
+
+        for (expression in exprs) {
+            val exprVal = expression.eval(runtime)
+
+            // if the expression evaluates to ReturnData
+            // then return the value immediately ...
+            if (exprVal is ReturnData) {
+                return exprVal
+            }
+
+            // ... else, add the value to the list
+            evalList.add(exprVal)
+        }
+
+        // then return the last evaluated value in the block
+        return evalList.last()
     }
 }
 

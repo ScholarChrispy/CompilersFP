@@ -39,3 +39,7 @@ class ArrayData(val type: Data, val name: String, val contents: List<Expr>) : Da
         "$name($it)"
     }
 }
+
+class ReturnData(val v:Data):Data() {
+    override fun toString() = "$v"
+}

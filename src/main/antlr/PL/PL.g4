@@ -22,6 +22,7 @@ statement returns [Expr expr]
     | ifcheck    { $expr = $ifcheck.expr; }
     | loop       { $expr = $loop.expr;}
     | funcDef    { $expr = $funcDef.expr;}
+    | returnStmt { $expr = $returnStmt.expr; }
     ;
 
 assignment returns [Expr expr]
@@ -105,6 +106,11 @@ array returns [Expr expr]
     |'String[]' ID '=' '[' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ']'{ $expr = new ArrayDef(new StringData("a"), $ID.text, args); }
     |'bool[]' ID '=' '[' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ']'{ $expr = new ArrayDef(new BooleanData(true), $ID.text, args); }
     )
+    ;
+
+returnStmt returns [Expr expr]
+    : 'return' ';'  { $expr = new ReturnLiteral(new NoneExpr()); }
+    | 'return' expression ';' { $expr = new ReturnLiteral($expression.expr); }
     ;
 
 CREMENT    : ( '+++' | '---' );

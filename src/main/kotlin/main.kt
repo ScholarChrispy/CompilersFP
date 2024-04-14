@@ -66,7 +66,7 @@ fun main() {
           print(message);
         }
         
-        greeting("Albert", "How are you?");
+        print(greeting("Albert", "How are you?"));
         """
 
     val program5 = """
@@ -81,9 +81,26 @@ fun main() {
         print(factorial(10));
         """
 
+    val program6 = """
+       function test(x, y) {
+        if (x == y) {
+            return;
+        } else if (x > y) {
+            return x;
+        } else {
+            return y;
+        }
+       } 
+       
+       print(test(1.5, 1.5));
+       print(test(1, 2));
+       print(test(1, 1.5));
+    """
+
     println("Program1: " + execute(program1))
     println("Program2: " + execute(program2))
     println("Program3: " + execute(program3))
     println("Program4: " + execute(program4))
     println("Program5: " + execute(program5))
+    println("Program6: " + execute(program6))
 }
