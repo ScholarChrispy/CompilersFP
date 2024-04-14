@@ -2,7 +2,7 @@
 
 ## Members:
 - Christopher Johnson (100870882)
-- Jack ()
+- Jack Udeschini (100777605)
 - Cameron ()
 
 ## Project Requirements:
