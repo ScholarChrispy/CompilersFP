@@ -6,9 +6,9 @@
 - Cameron ()
 
 ## Project Requirements:
-This project requires `jdk-21` to build. Please be aware that it **will not build** with `jdk-22` or higher.
+This project requires `jdk-21` or earlier to build. Please be aware that it **will not build** with `jdk-22` or higher. Make sure that the `jdk-xx/bin` is added to your PATH and JAVA_HOME is set to the `jdk-xx` directory. This has only been tested with `jdk-21`, so there may be issues with earlier versions.
 
-## Build Steps:
+##  Steps for Running the Project:
 ### 1. Clone the Repository:
 Use `git clone "https://github.com/ScholarChrispy/CompilersFP.git"` to clone the repository to your machine. Make sure to `cd` into the new `CompilersFP` directory before continuing with step 2.
 
