@@ -97,10 +97,21 @@ fun main() {
        print(test(1, 1.5));
     """
 
+    val program7 = """
+        double[] x = [1.0, 2.0];
+        sum = 0.0;
+        for(i = 0; i <= len(x); i +++) {
+          sum = sum + i;
+        }
+        
+        print(sum);
+    """
+
     println("Program1: " + execute(program1))
     println("Program2: " + execute(program2))
     println("Program3: " + execute(program3))
     println("Program4: " + execute(program4))
     println("Program5: " + execute(program5))
     println("Program6: " + execute(program6))
+    println("Program7: " + execute(program7))
 }

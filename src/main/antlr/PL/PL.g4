@@ -43,6 +43,7 @@ expression returns [Expr expr]
     | sum                                     { $expr = $sum.expr; }
     | max                                     { $expr = $max.expr; }
     | min                                     { $expr = $min.expr; }
+    | len                                     { $expr = $len.expr; }
     | n1=numeric'-'n2=numeric                 { $expr = new Arith("-", $n1.expr, $n2.expr); }
     | e1=expression'-'n2=numeric              { $expr = new Arith("-", $e1.expr, $n2.expr); }
     | n1=numeric'-'e2=expression              { $expr = new Arith("-", $n1.expr, $e2.expr); }
@@ -98,9 +99,15 @@ min returns [Expr expr]
     : {List<Expr> args = new ArrayList<Expr>(); }
     'min(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Min(args); }
     ;
+
+len returns [Expr expr]
+    : 'len(' ID ')'  { $expr = new DerefLen($ID.text); }  // dereferenced list
+    | { List<Expr> args = new ArrayList<Expr>(); }
+      'len(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Len(args); }  // manual list
+    ;
     
 array returns [Expr expr]
-    : {List<Expr> args = new ArrayList<Expr>(); }
+    : { List<Expr> args = new ArrayList<Expr>(); }
     ('int[]' ID '=' '[' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ']'{ $expr = new ArrayDef(new IntData(0), $ID.text, args); }
     |'double[]' ID '=' '[' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ']'{ $expr = new ArrayDef(new DoubleData(0.0), $ID.text, args); }
     |'float[]' ID '=' '[' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ']'{ $expr = new ArrayDef(new FloatData(0.0f), $ID.text, args); }

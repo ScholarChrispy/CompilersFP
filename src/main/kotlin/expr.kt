@@ -359,7 +359,7 @@ class Sum(val arguments: List<Expr>) : Expr() {
 
 class Max(val arguments: List<Expr>) : Expr() {
      override fun eval(runtime:Runtime): Data {
-         val x:Data = arguments[0].eval(runtime)
+        val x:Data = arguments[0].eval(runtime)
         if(x is IntData || x is DoubleData || x is FloatData) {
             var highest = -Float.MAX_VALUE
             var highestIndex = 0
@@ -407,7 +407,7 @@ class Max(val arguments: List<Expr>) : Expr() {
 
 class Min(val arguments: List<Expr>) : Expr() {
      override fun eval(runtime:Runtime): Data {
-         val x:Data = arguments[0].eval(runtime)
+        val x:Data = arguments[0].eval(runtime)
         if(x is IntData || x is DoubleData || x is FloatData) {
             var lowest = Float.MAX_VALUE
             var lowestIndex = 0
@@ -451,6 +451,40 @@ class Min(val arguments: List<Expr>) : Expr() {
         }
         return None
      }
+}
+
+// this version of Len handles manually defined arrays (e.g. 1,2,3,4)
+class Len(val arguments: List<Expr>) : Expr() {
+    override fun eval(runtime: Runtime): Data {
+        val x:Data = arguments[0].eval(runtime)
+        if (x is IntData || x is DoubleData || x is FloatData) {
+            var count = 0
+            for (i in 0 until (arguments.size)) {
+                count++
+            }
+            return IntData(count)
+        }
+        else {
+            throw Exception("$x is not a supported data type.")
+        }
+    }
+}
+
+// this alternate version of the len function handles stored arrays (e.g. int[] x = [1,2,3,4])
+class DerefLen(val arrayID:String):Expr() {
+    override fun eval(runtime: Runtime): Data {
+        val array = Deref(arrayID).eval(runtime)
+
+        if (array is ArrayData) {
+            var count:Int = 0
+            for (i in 0 until (array.contents.size)) {
+                count++
+            }
+            return IntData(count)
+        } else {
+            throw Exception("${arrayID} is not an array.")
+        }
+    }
 }
 
 class ArrayDef(val type: Data, val name: String, val contents: List<Expr>) : Expr() {
