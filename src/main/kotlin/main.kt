@@ -115,6 +115,8 @@ fun main() {
         }
         
         print(sum);
+        tf = true;
+        print(tf);
     """
 
     println("Program1: " + execute(program1))

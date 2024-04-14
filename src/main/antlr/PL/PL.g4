@@ -33,6 +33,7 @@ assignment returns [Expr expr]
 expression returns [Expr expr]
     : '(' expression ')'                      { $expr = $expression.expr; }
     | numeric                                 { $expr = $numeric.expr; }
+    | BOOLEAN                                 { $expr = new BooleanLiteral($BOOLEAN.text); }
     | STRING                                  { $expr = new StringLiteral($STRING.text); }
     | ID                                      { $expr = new Deref($ID.text); }
     | '-' '('? expression ')'?                { $expr = new Arith("-", new IntLiteral("0"), $expression.expr); }
@@ -137,6 +138,9 @@ FLOAT      : ('0' .. '9')+ '.' ('0' .. '9')+ 'f';
 DOUBLE     : ('0' .. '9')+ '.' ('0' .. '9')+ ;
 
 STRING     : '"' .*? (~('\\')'"');
+BOOLEAN    : 'true' | 'false';
 ID         : [a-zA-Z_][a-zA-Z0-9_]*;
-COMMENT    : '/*' .*? '*/';    
+
+L_COMMENT  : '//' .*? '\n' -> skip;
+COMMENT    : '/*' .*? '*/' -> skip;
 WHITESPACE : [ \t\r\n] -> skip;
