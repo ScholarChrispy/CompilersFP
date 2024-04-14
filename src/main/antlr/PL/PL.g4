@@ -26,12 +26,7 @@ statement returns [Expr expr]
     ;
 
 assignment returns [Expr expr]
-    : 'int' ID '=' expression { $expr = new InitializeAssign(new IntData(0), $ID.text, $expression.expr); }
-    | 'double' ID '=' expression { $expr = new InitializeAssign(new DoubleData(0.0), $ID.text, $expression.expr); }
-    | 'float' ID '=' expression { $expr = new InitializeAssign(new FloatData(0.0f), $ID.text, $expression.expr); }
-    | 'String' ID '=' expression { $expr = new InitializeAssign(new StringData("a"), $ID.text, $expression.expr); }
-    | 'bool' ID '=' expression { $expr = new InitializeAssign(new BooleanData(true), $ID.text, $expression.expr); }
-    | ID '=' expression { $expr = new Assign($ID.text, $expression.expr); }
+    : ID '=' expression { $expr = new Assign($ID.text, $expression.expr); }
     | ID CREMENT { $expr = new Assign($ID.text,new Crement(new Deref($ID.text), $CREMENT.text)); }
     ;
 
@@ -67,7 +62,7 @@ ifcheck returns [Expr expr]
 loop returns [Expr expr]
     : 'while' '(' cond=expression ')' '{' block '}' { $expr = new Loop(new NoneExpr(), $cond.expr, $block.expr, new NoneExpr()); }
     | 'for' '(' a1=assignment ';' e1=expression ';' a2=assignment ')' '{' block '}' { $expr = new Loop($a1.expr, $e1.expr, $block.expr, $a2.expr); }
-    | 'for' '(' ID 'in' e1=expression '..' e2=expression ')' '{' block '}' { $expr = new Loop(new InitializeAssign(new IntData(0),$ID.text, $e1.expr), new Cmp("<=", new Deref($ID.text), $e2.expr), $block.expr, new Assign($ID.text, new Crement(new Deref($ID.text), "+++"))); }
+    | 'for' '(' ID 'in' e1=expression '..' e2=expression ')' '{' block '}' { $expr = new Loop(new Assign($ID.text, $e1.expr), new Cmp("<=", new Deref($ID.text), $e2.expr), $block.expr, new Assign($ID.text, new Crement(new Deref($ID.text), "+++"))); }
     ;
     
 funcDef returns [Expr expr]
