@@ -116,12 +116,72 @@ class Arith(val op:String, val left:Expr, val right:Expr) : Expr() {
     }
 }
 
+class InitializeAssign(val type: Data, val name: String, val expr: Expr): Expr() {
+    override fun eval(runtime:Runtime):Data {
+        val x = expr.eval(runtime)
+        if (type is IntData) {
+            if (!(x is IntData)) {
+                throw Exception("$x is not an Int")
+            }
+        }
+        if (type is DoubleData) {
+            if (!(x is DoubleData)) {
+                throw Exception("$x is not a Double")
+            }
+        }
+        if (type is FloatData) {
+            if (!(x is FloatData)) {
+                throw Exception("$x is not a Float")
+            }
+        }
+        if (type is StringData) {
+            if (!(x is StringData)) {
+                throw Exception("$x is not a String")
+            }
+        }
+        if (type is BooleanData) {
+            if (!(x is BooleanData)) {
+                throw Exception("$x is not a Boolean")
+            }
+        }
+        runtime.symbolTable.put(name, x)
+        return None
+    }
+}
+
 // assignment (i.e. x = 1)
 class Assign(val name: String,val expr: Expr): Expr() {
     override fun eval(runtime:Runtime):Data {
-        val v:Data = expr.eval(runtime)
-        runtime.symbolTable.put(name, v)
-        return None
+        val temp = runtime.symbolTable[name]
+        if (temp != null){
+            val v:Data = expr.eval(runtime)
+            if (temp is IntData && v is IntData){
+                runtime.symbolTable.put(name, v)
+                return None
+            }
+            else if (temp is DoubleData && v is DoubleData){
+                runtime.symbolTable.put(name, v)
+                return None
+            }
+            else if (temp is FloatData && v is FloatData){
+                runtime.symbolTable.put(name, v)
+                return None
+            }
+            else if (temp is StringData && v is StringData){
+                runtime.symbolTable.put(name, v)
+                return None
+            }
+            else if (temp is BooleanData && v is BooleanData){
+                runtime.symbolTable.put(name, v)
+                return None
+            }
+            else{
+                throw Exception("Type mismatch")
+            }
+        }
+        else {
+            throw Exception("This variable $name, has not been initialized")
+        }
     }
 }
 
