@@ -82,7 +82,6 @@ numeric returns [Expr expr]
     | '-' '('? INT ')'?  { $expr = new Arith("-", new IntLiteral("0"), new IntLiteral($INT.text)); }
     | '-' '('? FLOAT ')'?   { $expr = new Arith("-", new FloatLiteral("0.0"), new FloatLiteral($FLOAT.text)); }
     | '-' '('? DOUBLE ')'?   { $expr = new Arith("-", new DoubleLiteral("0.0"), new DoubleLiteral($DOUBLE.text)); }
-    
     ;
     
 sum returns [Expr expr]

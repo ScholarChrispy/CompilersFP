@@ -1,39 +1,47 @@
 package backend
 
+// Used as a template for all other Expr types
 abstract class Expr {
     abstract fun eval(runtime:Runtime):Data
 }
 
+// Nonetype Expr
 class NoneExpr(): Expr() {
     override fun eval(runtime:Runtime) = None
 }
 
+// Int Expr
 class IntLiteral(val lexeme:String):Expr() {
     override fun eval(runtime:Runtime):Data 
     = IntData(Integer.parseInt(lexeme))
 }
 
+// Double Expr
 class DoubleLiteral(val lexeme:String):Expr() {
     override fun eval(runtime:Runtime):Data 
     = DoubleData(lexeme.toDouble())
 }
 
+// Float Expr
 class FloatLiteral(val lexeme:String):Expr() {
     override fun eval(runtime:Runtime):Data 
     = FloatData(lexeme.toFloat())
 }
 
+// Boolean Expr
 class BooleanLiteral(val lexeme:String):Expr() {
     override fun eval(runtime:Runtime): Data = 
     BooleanData(lexeme.equals("true"))
 }
 
+// String Expr
 class StringLiteral(val lexeme:String):Expr() {
     override fun eval(runtime:Runtime): Data { 
         return StringData(lexeme.substring(1, lexeme.length-1))
     }
 }
 
+// Expr that specifically identifies return statements
 class ReturnLiteral(val expr:Expr):Expr() {
     override fun eval(runtime: Runtime):Data {
         val exprVal = expr.eval(runtime)
@@ -41,11 +49,12 @@ class ReturnLiteral(val expr:Expr):Expr() {
     }
 }
 
+// Arithmetic
 class Arith(val op:String, val left:Expr, val right:Expr) : Expr() {
     override fun eval(runtime:Runtime):Data {
-        var x = left.eval(runtime)
-        var y = right.eval(runtime)
-        if (!(x is StringData) && !(y is StringData)) {
+        var x = left.eval(runtime)   // value of left side of argument
+        var y = right.eval(runtime)  // value of right side of argument
+        if (x !is StringData && y !is StringData) {
             if (x is FloatData && y is IntData) {
                 y = FloatData(y.v.toFloat())
             }
@@ -64,19 +73,24 @@ class Arith(val op:String, val left:Expr, val right:Expr) : Expr() {
             if (y is DoubleData && x is IntData) {
                 x = DoubleData(x.v.toDouble())
             }
-        
+
+            // operators for integers
             if (x is IntData && y is IntData) {
                 if (op == "+") return IntData(x.v + y.v)
                 if (op == "-") return IntData(x.v - y.v)
                 if (op == "*") return IntData(x.v * y.v)
                 if (op == "/") return IntData(x.v / y.v)
             }
+
+            // operators for doubles
             if (x is DoubleData && y is DoubleData) {
                 if (op == "+") return DoubleData(x.v + y.v)
                 if (op == "-") return DoubleData(x.v - y.v)
                 if (op == "*") return DoubleData(x.v * y.v)
                 if (op == "/") return DoubleData(x.v / y.v)
             }
+
+            // operators for floats
             if (x is FloatData && y is FloatData) {
                 if (op == "+") return FloatData(x.v + y.v)
                 if (op == "-") return FloatData(x.v - y.v)
@@ -85,20 +99,24 @@ class Arith(val op:String, val left:Expr, val right:Expr) : Expr() {
             }
             
         }
+
+        // string repetition
         if (x is StringData && y is IntData) {
             if (op == "*") return StringData(x.v.repeat(y.v))
         }
         if (y is StringData && x is IntData) {
             if (op == "*") return StringData(y.v.repeat(x.v))
         }
+
+        // concatenation
         if (op == "++") {
             return StringData(x.toString().plus(y.toString()))
         }
         return None
     }
-    
 }
 
+// assignment (i.e. x = 1)
 class Assign(val name: String,val expr: Expr): Expr() {
     override fun eval(runtime:Runtime):Data {
         val v:Data = expr.eval(runtime)
@@ -107,6 +125,7 @@ class Assign(val name: String,val expr: Expr): Expr() {
     }
 }
 
+// dereferencing (i.e. returning value of variable)
 class Deref(val name:String): Expr() {
     override fun eval(runtime:Runtime):Data {
         val v = runtime.symbolTable[name]
@@ -118,6 +137,7 @@ class Deref(val name:String): Expr() {
     }
 }
 
+// block statement
 class Block(val exprs:List<Expr>):Expr() {
     override fun eval(runtime:Runtime):Data {
         // stores the evaluated expression values
@@ -141,30 +161,39 @@ class Block(val exprs:List<Expr>):Expr() {
     }
 }
 
+// comparison operator (i.e. >, <, ==, etc.)
 class Cmp(val op:String,val left:Expr,val right:Expr) : Expr() {
     override fun eval(runtime:Runtime): Data {
-        var x:Data = left.eval(runtime)
-        var y:Data = right.eval(runtime)
-        
+        var x:Data = left.eval(runtime)   // value of left side of comparison
+        var y:Data = right.eval(runtime)  // value of right side of comparison
+
+        // set y value for float & int
         if (x is FloatData && y is IntData) {
             y = FloatData(y.v.toFloat())
         }
+        // set y value for float & double
         if (x is FloatData && y is DoubleData) {
             y = FloatData(y.v.toFloat())
         }
+        // set y value for double & int
         if (x is DoubleData && y is IntData) {
             y = DoubleData(y.v.toDouble())
         }
+
+        // set x value for float & int
         if (y is FloatData && x is IntData) {
             x = FloatData(x.v.toFloat())
         }
+        // set x value for float & double
         if (y is FloatData && x is DoubleData) {
             x = FloatData(x.v.toFloat())
         }
+        // set x value for double & int
         if (y is DoubleData && x is IntData) {
             x = DoubleData(x.v.toDouble())
         }
-        
+
+        // comparison operators for int data
         if(x is IntData && y is IntData) {
             val result = when(op) {
                 "<" -> x.v < y.v
@@ -178,6 +207,8 @@ class Cmp(val op:String,val left:Expr,val right:Expr) : Expr() {
             }
             return BooleanData(result)
         }
+
+        // comparison operators for double data
         else if (x is DoubleData && y is DoubleData) {
             val result = when(op) {
                 "<" -> x.v < y.v
@@ -191,6 +222,8 @@ class Cmp(val op:String,val left:Expr,val right:Expr) : Expr() {
             }
             return BooleanData(result)
         }
+
+        // comparison operators for float data
         else if (x is FloatData && y is FloatData) {
             val result = when(op) {
                 "<" -> x.v < y.v
@@ -210,6 +243,7 @@ class Cmp(val op:String,val left:Expr,val right:Expr) : Expr() {
     }
 }
 
+// if-else statement
 class Ifelse(val cond: Expr,val trueExpr: Expr,val falseExpr: Expr) : Expr() {
     override fun eval(runtime:Runtime): Data {
         val result = cond.eval(runtime) as BooleanData
@@ -221,6 +255,7 @@ class Ifelse(val cond: Expr,val trueExpr: Expr,val falseExpr: Expr) : Expr() {
     }
 }
 
+// print statement
 class Print(val expr: Expr): Expr() {
     override fun eval(runtime:Runtime): Data {
         val data = expr.eval(runtime)
@@ -229,6 +264,7 @@ class Print(val expr: Expr): Expr() {
     }
 }
 
+// loops
 class Loop(val creation: Expr, val cond: Expr, val body: Expr, val iterator: Expr): Expr() {
     override fun eval(runtime:Runtime): Data {
         creation.eval(runtime)
@@ -240,6 +276,7 @@ class Loop(val creation: Expr, val cond: Expr, val body: Expr, val iterator: Exp
     }
 }
 
+// increment value
 class Crement(val left: Expr, val op: String): Expr() {
     override fun eval(runtime:Runtime): Data {
         val x = left.eval(runtime)
@@ -256,6 +293,7 @@ class Crement(val left: Expr, val op: String): Expr() {
     }
 }
 
+// function definition
 class FuncDef(val name: String, val parameters: List<String>, val body: Expr) : Expr() {
     override fun eval(runtime:Runtime):Data {
         val funcdata = FuncData(name, parameters, body)
@@ -264,7 +302,7 @@ class FuncDef(val name: String, val parameters: List<String>, val body: Expr) : 
     }
 }
 
-
+// calling function with ID
 class FuncCall(val funcname: String, val arguments: List<Expr>) : Expr() {
     override fun eval(runtime:Runtime): Data {
         val f = runtime.symbolTable[funcname]
@@ -357,7 +395,7 @@ class Sum(val arguments: List<Expr>) : Expr() {
     }
 }
 
-
+// this alternate version of the Sum function handles stored arrays (e.g. int[] x = [1,2,3,4])
 class DerefSum(val arrayID:String):Expr() {
     override fun eval(runtime: Runtime):Data {
         val array = Deref(arrayID).eval(runtime)
@@ -470,7 +508,6 @@ class Max(val arguments: List<Expr>) : Expr() {
              if (dataCheck is FloatData){
                  return FloatData(dataCheck.v)
              }
-            
         }
         else {
             throw Exception("$x is not a valid number.")
@@ -521,7 +558,6 @@ class DerefMax(val arrayID:String):Expr() {
                 if (dataCheck is FloatData) {
                     return FloatData(dataCheck.v)
                 }
-
             } else {
                 throw Exception("$x is not a valid number.")
             }
@@ -572,7 +608,6 @@ class Min(val arguments: List<Expr>) : Expr() {
              if (dataCheck is FloatData){
                  return FloatData(dataCheck.v)
              }
-            
         }
         else {
             throw Exception("$x is not a valid number.")
@@ -624,7 +659,6 @@ class DerefMin(val arrayID:String):Expr() {
                 if (dataCheck is FloatData){
                     return FloatData(dataCheck.v)
                 }
-
             }
             else {
                 throw Exception("$x is not a valid number.")
@@ -670,6 +704,7 @@ class DerefLen(val arrayID:String):Expr() {
     }
 }
 
+// define arrays
 class ArrayDef(val type: Data, val name: String, val contents: List<Expr>) : Expr() {
     override fun eval(runtime:Runtime):Data {
         var contentData:MutableList<Data> = mutableListOf()
@@ -708,6 +743,7 @@ class ArrayDef(val type: Data, val name: String, val contents: List<Expr>) : Exp
     }
 }
 
+// access the value of an array at a given index
 class ArrayIndex(val name: String, val index: Expr) : Expr() {
     override fun eval(runtime:Runtime):Data {
         val x = index.eval(runtime)
@@ -719,20 +755,17 @@ class ArrayIndex(val name: String, val index: Expr) : Expr() {
             throw Exception("Index is not an Int")
         }
         val array = runtime.symbolTable[name]
-        if(array == null) {
+        if (array == null) {
             throw Exception("$name does not exist.")
         }
-        if(array is ArrayData) {
+        if (array is ArrayData) {
             if(array.contents.size <= ind || ind < 0) {
                 throw Exception("Index out of bounds")
             }
             return array.contents[ind]
-            
-            
         }
         else {
             throw Exception("$name is not an array.")
         }
-     
     }
 }
