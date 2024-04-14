@@ -98,6 +98,16 @@ fun main() {
     """
 
     val program7 = """
+        int[] x = [2, 2, 3];
+        print(min(2,2,3));
+        print(min(x));
+        print(max(2,2,3));
+        print(max(x));
+        print(sum(2,2,3));
+        print(sum(x));
+    """
+
+    val program8 = """
         double[] x = [1.0, 2.0];
         sum = 0.0;
         for(i = 0; i <= len(x); i +++) {
@@ -114,4 +124,5 @@ fun main() {
     println("Program5: " + execute(program5))
     println("Program6: " + execute(program6))
     println("Program7: " + execute(program7))
+    println("Program8: " + execute(program8))
 }

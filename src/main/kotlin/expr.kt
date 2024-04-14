@@ -290,7 +290,7 @@ class FuncCall(val funcname: String, val arguments: List<Expr>) : Expr() {
     }
 }
 
-
+// this version of Sum handles manually defined arrays (e.g. 1,2,3,4)
 class Sum(val arguments: List<Expr>) : Expr() {
     override fun eval(runtime:Runtime): Data {
         val x:Data = arguments[0].eval(runtime)
@@ -357,6 +357,80 @@ class Sum(val arguments: List<Expr>) : Expr() {
     }
 }
 
+
+class DerefSum(val arrayID:String):Expr() {
+    override fun eval(runtime: Runtime):Data {
+        val array = Deref(arrayID).eval(runtime)
+
+        if (array is ArrayData) {
+            val x:Data = array.contents[0]
+            if(x is IntData || x is DoubleData || x is FloatData) {
+                var resultInt = 0
+                var resultDouble = 0.0
+                var resultFloat = 0.0f
+                var intcheck = true
+                var doublecheck = false
+                var floatcheck = false
+                array.contents.forEach { arg ->
+                    var temp:Data = arg
+                    if (doublecheck == true && temp is IntData) {
+                        temp = DoubleData(temp.v.toDouble())
+                    }
+                    if (floatcheck == true && (temp is IntData)) {
+                        temp = FloatData(temp.v.toFloat())
+                    }
+                    if (floatcheck == true && (temp is DoubleData)) {
+                        temp = FloatData(temp.v.toFloat())
+                    }
+
+                    if (temp is IntData) {
+                        resultInt = resultInt + temp.v
+                    }
+                    else if (temp is DoubleData) {
+                        if (resultDouble == 0.0){
+                            resultDouble = resultInt.toDouble()
+                        }
+                        resultDouble = resultDouble + temp.v
+                        intcheck = false
+                        doublecheck = true
+                    }
+                    else if (temp is FloatData) {
+                        if (resultFloat == 0.0f && intcheck == true){
+                            resultFloat = resultInt.toFloat()
+                        }
+                        if (resultFloat == 0.0f && doublecheck == true){
+                            resultFloat = resultDouble.toFloat()
+                        }
+                        resultFloat = resultFloat + temp.v
+                        intcheck = false
+                        doublecheck = false
+                        floatcheck = true
+                    }
+                    else {
+                        throw Exception("$temp is not a valid number.")
+                    }
+                }
+                if (intcheck == true) {
+                    return IntData(resultInt)
+                }
+                else if (doublecheck == true) {
+                    return DoubleData(resultDouble)
+                }
+                else if (floatcheck == true) {
+                    return FloatData(resultFloat)
+                }
+            }
+            else {
+                throw Exception("$x is not a valid number.")
+            }
+            return None
+        } else {
+            throw Exception("$arrayID is not an array.")
+        }
+    }
+}
+
+// this version of Max handles manually defined arrays (e.g. 1,2,3,4)
 class Max(val arguments: List<Expr>) : Expr() {
      override fun eval(runtime:Runtime): Data {
         val x:Data = arguments[0].eval(runtime)
@@ -405,6 +479,60 @@ class Max(val arguments: List<Expr>) : Expr() {
      }
 }
 
+// this alternate version of the Max function handles stored arrays (e.g. int[] x = [1,2,3,4])
+class DerefMax(val arrayID:String):Expr() {
+    override fun eval(runtime: Runtime):Data {
+        val array = Deref(arrayID).eval(runtime)
+
+        if (array is ArrayData) {
+            val x: Data = array.contents[0]
+            if (x is IntData || x is DoubleData || x is FloatData) {
+                var highest = -Float.MAX_VALUE
+                var highestIndex = 0
+                for (i in 0 until (array.contents.size)) {
+                    var temp: Data = array.contents[i]
+                    if (temp is IntData) {
+                        temp = FloatData(temp.v.toFloat())
+                    }
+                    if (temp is DoubleData) {
+                        temp = FloatData(temp.v.toFloat())
+                    }
+                    if (temp is FloatData) {
+                        if (i == 0) {
+                            highest = temp.v
+                        }
+                        else {
+                            if (highest < temp.v){
+                                highest = temp.v
+                                highestIndex = i
+                            }
+                        }
+                    } else {
+                        throw Exception("Cannot compare $temp.")
+                    }
+                }
+                val dataCheck: Data = array.contents[highestIndex]
+                if (dataCheck is IntData) {
+                    return IntData(dataCheck.v)
+                }
+                if (dataCheck is DoubleData) {
+                    return DoubleData(dataCheck.v)
+                }
+                if (dataCheck is FloatData) {
+                    return FloatData(dataCheck.v)
+                }
+
+            } else {
+                throw Exception("$x is not a valid number.")
+            }
+            return None
+        } else {
+            throw Exception("$arrayID is not an array.")
+        }
+    }
+}
+
+// this version of Min handles manually defined arrays (e.g. 1,2,3,4)
 class Min(val arguments: List<Expr>) : Expr() {
      override fun eval(runtime:Runtime): Data {
         val x:Data = arguments[0].eval(runtime)
@@ -453,6 +581,61 @@ class Min(val arguments: List<Expr>) : Expr() {
      }
 }
 
+// this alternate version of the Min function handles stored arrays (e.g. int[] x = [1,2,3,4])
+class DerefMin(val arrayID:String):Expr() {
+    override fun eval(runtime: Runtime):Data {
+        val array = Deref(arrayID).eval(runtime)
+
+        if (array is ArrayData) {
+            val x:Data = array.contents[0]
+            if(x is IntData || x is DoubleData || x is FloatData) {
+                var lowest = Float.MAX_VALUE
+                var lowestIndex = 0
+                for (i in 0 until (array.contents.size)) {
+                    var temp:Data = array.contents[i]
+                    if (temp is IntData) {
+                        temp = FloatData(temp.v.toFloat())
+                    }
+                    if (temp is DoubleData) {
+                        temp = FloatData(temp.v.toFloat())
+                    }
+                    if (temp is FloatData) {
+                        if (i == 0) {
+                            lowest = temp.v
+                        }
+                        else {
+                            if (lowest > temp.v){
+                                lowest = temp.v
+                                lowestIndex = i
+                            }
+                        }
+                    }
+                    else {
+                        throw Exception("Cannot compare $temp.")
+                    }
+                }
+                val dataCheck:Data = array.contents[lowestIndex]
+                if (dataCheck is IntData){
+                    return IntData(dataCheck.v)
+                }
+                if (dataCheck is DoubleData){
+                    return DoubleData(dataCheck.v)
+                }
+                if (dataCheck is FloatData){
+                    return FloatData(dataCheck.v)
+                }
+
+            }
+            else {
+                throw Exception("$x is not a valid number.")
+            }
+            return None
+        } else {
+            throw Exception("$arrayID is not an array.")
+        }
+    }
+}
+
 // this version of Len handles manually defined arrays (e.g. 1,2,3,4)
 class Len(val arguments: List<Expr>) : Expr() {
     override fun eval(runtime: Runtime): Data {
@@ -470,7 +653,7 @@ class Len(val arguments: List<Expr>) : Expr() {
     }
 }
 
-// this alternate version of the len function handles stored arrays (e.g. int[] x = [1,2,3,4])
+// this alternate version of the Len function handles stored arrays (e.g. int[] x = [1,2,3,4])
 class DerefLen(val arrayID:String):Expr() {
     override fun eval(runtime: Runtime): Data {
         val array = Deref(arrayID).eval(runtime)
@@ -482,7 +665,7 @@ class DerefLen(val arrayID:String):Expr() {
             }
             return IntData(count)
         } else {
-            throw Exception("${arrayID} is not an array.")
+            throw Exception("$arrayID is not an array.")
         }
     }
 }

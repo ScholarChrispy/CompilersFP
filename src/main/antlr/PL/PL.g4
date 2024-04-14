@@ -86,17 +86,20 @@ numeric returns [Expr expr]
     ;
     
 sum returns [Expr expr]
-    : {List<Expr> args = new ArrayList<Expr>(); }
+    : 'sum(' ID ')'  { $expr = new DerefSum($ID.text); }  // dereferenced list
+    | {List<Expr> args = new ArrayList<Expr>(); }
     'sum(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Sum(args); }
     ;
 
 max returns [Expr expr]
-    : {List<Expr> args = new ArrayList<Expr>(); }
+    : 'max(' ID ')'  { $expr = new DerefMax($ID.text); }  // dereferenced list
+    | {List<Expr> args = new ArrayList<Expr>(); }
     'max(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Max(args); }
     ;
     
 min returns [Expr expr]
-    : {List<Expr> args = new ArrayList<Expr>(); }
+    : 'min(' ID ')'  { $expr = new DerefMin($ID.text); }  // dereferenced list
+    | {List<Expr> args = new ArrayList<Expr>(); }
     'min(' (e1=expression {args.add($e1.expr); } (','e2=expression { args.add($e2.expr); })*)? ')' { $expr = new Min(args); }
     ;
 
