@@ -22,19 +22,15 @@ kotlin {
 }
 
 tasks.generateGrammarSource {
-    // set output directory to some arbitrary location in `/build` directory.
-    // by convention `/build/generated/sources/main/java/<generator name>` is often used
     outputDirectory = file("build/generated/sources/main/kotlin/antlr/grammar")
 
-    // pass -package to make generator put code in not default space
+    // set the package of the generated ANTLR code to PL
     arguments = listOf("-package", "PL")
 }
 
 sourceSets {
     main {
         java {
-            // telling that output generateGrammarSource should be part of main source set
-            // actually passed value will be equal to `outputDirectory` that we configured above
             srcDir(tasks.generateGrammarSource)
         }
     }

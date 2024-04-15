@@ -43,8 +43,8 @@ fun main() {
         """
 
     val program2 = """
-        x = "woof ";
-        y = "Dog goes " ++ (x * 2);
+        x = 2.0;
+        y = x + 2;
         
         print(y);
         """
@@ -55,7 +55,14 @@ fun main() {
           sum = sum + i;
         }
         
-        print(sum);
+        print("Loop 1 Sum: " ++ sum);
+        
+        sum = 0;
+        for(i = 10; i <= 20; i+++) {
+          sum = sum + i;
+        }
+        
+        print("Loop 2 Sum: " ++ sum);
         """
 
     val program4 = """
@@ -64,6 +71,8 @@ fun main() {
           x = x ++ " my name is " ++ name ++ ".";
           print(x);
           print(message);
+          
+          return x ++ " " ++ message;
         }
         
         print(greeting("Albert", "How are you?"));
@@ -82,49 +91,73 @@ fun main() {
         """
 
     val program6 = """
-       function test(x, y) {
-        if (x == y) {
-            return;
-        } else if (x > y) {
-            return x;
-        } else {
-            return y;
+        function test(x,y){
+            return x+y;
+            print("This shouldn't print");
         }
-       } 
-       
-       print(test(1.5, 1.5));
-       print(test(1, 2));
-       print(test(1, 1.5));
+        
+        print(test(1,2));
     """
 
     val program7 = """
         int[] x = [2, 2, 3];
-        print(min(2,2,3));
-        print(min(x));
-        print(max(2,2,3));
-        print(max(x));
-        print(sum(2,2,3));
-        print(sum(x));
+        print("x = " ++ x);
+        
+        print("Min (manual definition): " ++ min(2,2,3));
+        print("Min (variables): " ++ min(x));
+        
+        print("Max (manual definition): " ++ max(2,2,3));
+        print("Max (variables): " ++ max(x));
+        
+        print("Sum (manual definition): " ++ sum(2,2,3));
+        print("Sum (variables): " ++ sum(x));
     """
 
     val program8 = """
         double[] x = [1.0, 2.0];
         sum = 0.0;
-        for(i = 0; i <= len(x); i +++) {
+        for(i = 0; i <= len(x); i+++) {
           sum = sum + i;
         }
         
         print(sum);
-        tf = true;
-        print(tf);
     """
 
-    println("Program1: " + execute(program1))
-    println("Program2: " + execute(program2))
-    println("Program3: " + execute(program3))
-    println("Program4: " + execute(program4))
-    println("Program5: " + execute(program5))
-    println("Program6: " + execute(program6))
-    println("Program7: " + execute(program7))
-    println("Program8: " + execute(program8))
+    val program9 = """
+        x = false;
+        y = true;
+        if(x) {
+            print("x");
+        }
+        else if (y) {
+            print("y");
+        }
+    """
+
+    println("Program 1: String Concatenation")
+    execute(program1)
+
+    println("\nProgram 2: Automatic Type Conversion")
+    execute(program2)
+
+    println("\nProgram 3: Loops")
+    execute(program3)
+
+    println("\nProgram 4: Functions")
+    execute(program4)
+
+    println("\nProgram 5: Recursion")
+    execute(program5)
+
+    println("\nProgram 6: Return Statements")
+    execute(program6)
+
+    println("\nProgram 7: Arrays & Aggregate Functions")
+    execute(program7)
+
+    println("\nProgram 8: Len() Aggregate Function")
+    execute(program8)
+
+    println("\nProgram 9: Boolean Values")
+    execute(program9)
 }
